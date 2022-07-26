@@ -25,8 +25,8 @@ def contains_dash(my_json):
             pass
         else:
             print("no dash found at begining")
-            # print(name)
-            print(strip_grade)
+            print(name)
+            # print(strip_grade)
 
 
 def check_type_papers_passed(my_json):

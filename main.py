@@ -1,15 +1,16 @@
 import json
 
 from algos import read_file, rm_useless_lines, fix_lines, final_fix, is_center, process_center, is_papers_passed, \
-    get_papers_passed, process_name_grade, saveFile
+    get_papers_passed, process_name_grade, saveFile, encode
 from finsal_test_o import perform_test_o
 
-level = "A"
+level = "O"
 year = "2020"
+output = "out/ALG2020_FINAL.txt"
 
 
 def main():
-    lines = read_file('alg2020.txt')
+    lines = read_file('olg2020.txt')
     lines = rm_useless_lines(lines)
     lines = fix_lines(lines)
     lines = final_fix(lines)
@@ -24,6 +25,7 @@ def main():
             papers_passed = get_papers_passed(line)
         else:
             name, grade = process_name_grade(line)
+            grade = encode(grade)
             student_data = {
                 "center_name": center_name,
                 "center_number": center_no,

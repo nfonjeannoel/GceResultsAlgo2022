@@ -7,7 +7,7 @@ def read_file(file_name):
     :param file_name: name of file to read
     :return: list of lines
     """
-    with open(file_name, 'r', encoding='utf8') as f:
+    with open(file_name, 'r', encoding='utf-8') as f:
         return f.readlines()
 
 
@@ -19,6 +19,7 @@ def rm_useless_lines(lines):
     """
     new_lines = []
     for line in lines:
+        line = line.strip()
         if "RESULTS:" in line:
             continue
         if "Regist:" in line:
@@ -48,7 +49,7 @@ def save_temp_file(lines):
     :param lines: list of lines
     :return: None
     """
-    with open('out/temp.txt', 'w') as f:
+    with open('out/temp.txt', 'w', encoding='utf-8') as f:
         for line in lines:
             f.write(line + '\n')
 
@@ -91,11 +92,18 @@ def fix_lines(lines):
             line = " ".join(line.split()[:-1])
             fixed_lines.append(line)
 
-            fixed_lines.append(lines[ind + 2])
-            fixed_lines.append(lines[ind + 1])
+            if len(lines[ind + 1].split()) > 1:
+                # papers passed comes before grade. so append grade before papers passed
+                fixed_lines.append(lines[ind + 2].strip())
+                if len(lines[ind + 3].split()) == 1:
+                    # part of the grade continues on third line
+                    fixed_lines.append(lines[ind + 3].strip())
+                    skip_ind.add(ind + 3)
+                fixed_lines.append(lines[ind + 1].strip())
 
-            skip_ind.add(ind + 1)
-            skip_ind.add(ind + 2)
+                skip_ind.add(ind + 1)
+                skip_ind.add(ind + 2)
+
             continue
 
         if "Centre No:" in line:
@@ -109,6 +117,11 @@ def fix_lines(lines):
         if "Passed In" in line:
             last = line.split()[-1].strip()
             if last.isdigit():
+                # no grade attached to this so no problem
+                if len(lines[ind + 1].split()) == 1:
+                    # part of the grade continues on third line
+                    fixed_lines.append(lines[ind + 1].strip())
+                    skip_ind.add(ind + 1)
                 fixed_lines.append(line)
                 continue
             else:
@@ -139,7 +152,7 @@ def save_fixed_file(lines):
     :param lines: list of lines
     :return: None
     """
-    with open('out/fixed.txt', 'w') as f:
+    with open('out/fixed.txt', 'w', encoding='utf-8') as f:
         for line in lines:
             f.write(line + '\n')
 
@@ -168,6 +181,8 @@ def final_fix(lines):
         strip_line = line.replace(" ", "")
         strip_line = strip_line.replace(" ", "")
         split_line = line.split()
+
+        line = line.strip()
 
         if "Centre No:" in line:
             temp_list.append(line)
@@ -239,7 +254,7 @@ def final_fix(lines):
                 temp_list.append(line + " ")
                 should_build = True
 
-    save_final_file(temp_list)
+    # save_final_file(temp_list)
     return temp_list
 
 
@@ -280,5 +295,18 @@ def process_name_grade(line):
 
 
 def saveFile(my_json):
-    with open("out/ALG2020_FINAL.txt", "w") as f:
+    with open("out/OLG2020_FINAL.txt", "w") as f:
         f.write(my_json)
+
+
+def encode(grade):
+    new_grade = ""
+    for i in grade:
+        if i in [",", "-"]:
+            new_grade += i
+        elif i.isalpha():
+            new_grade += i
+        else:
+            new_grade += "-"
+
+    return new_grade
