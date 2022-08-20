@@ -1,18 +1,19 @@
 import json
 
 from algos import read_file, rm_useless_lines, fix_lines, final_fix, is_center, process_center, is_papers_passed, \
-    get_papers_passed, process_name_grade, saveFile, encode
+    get_papers_passed, process_name_grade, saveFile, encode, fix_lines_technical
 from finsal_test_o import perform_test_o
 
-level = "O"
-year = "2020"
-output = "out/ALG2020_FINAL.txt"
+level = "ALT"
+year = "2022"
+file_name = 'alt2022.txt'
+save_name = "out/ALT2022_FINAL.txt"
 
 
 def main():
-    lines = read_file('olg2020.txt')
+    lines = read_file(file_name)
     lines = rm_useless_lines(lines)
-    lines = fix_lines(lines)
+    lines = fix_lines(lines) if level[-1] == "G" else fix_lines_technical(lines)
     lines = final_fix(lines)
 
     center_no = center_name = papers_passed = ""
@@ -31,7 +32,7 @@ def main():
                 "center_number": center_no,
                 "level": level,
                 "year": year,
-                "papers_passed": papers_passed,
+                "papers_passed": papers_passed if level[-1] == "G" else grade.count("-"),
                 "student_name": name,
                 "student_grades": grade
             }
@@ -39,7 +40,7 @@ def main():
             json_builder.append(student_data)
 
     perform_test_o(json_builder)
-    saveFile(json.dumps(json_builder))
+    saveFile(json.dumps(json_builder), save_name)
 
 
 if __name__ == '__main__':

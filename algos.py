@@ -54,6 +54,46 @@ def save_temp_file(lines):
             f.write(line + '\n')
 
 
+def fix_lines_technical(lines):
+    fixed_lines = []
+    skip_ind = set()
+    for ind, line in enumerate(lines):
+        if ind in skip_ind:
+            continue
+        if not line.strip():
+            continue
+        line = line.strip()
+        if line[0] == '(':
+            line = " ".join(line.split()[1:])
+            fixed_lines.append(line)
+            continue
+
+        if "Centre No:" in line:
+            if "Centre No:" in lines[ind + 1]:
+                # no student passed in current center
+                continue
+            if "Passed" not in lines[ind + 1]:
+                # continuation of center name
+                line = line + " " + lines[ind + 1].strip()
+                fixed_lines.append(line)
+                skip_ind.add(ind + 1)
+                continue
+        if "Single Subjects" in line:
+            continue
+        if "Passed In" in line:
+            # if "Specialty:" in lines[ind + 1]:
+                # line = line + " " + lines[ind + 1].strip()
+                # skip_ind.add(ind + 1)
+            # fixed_lines.append(line)
+            continue
+        if "Specialty:" in line:
+            continue
+        fixed_lines.append(line)
+
+    save_fixed_file(fixed_lines)
+    return fixed_lines
+
+
 def fix_lines(lines):
     """
     Fixes lines in a list of lines. removes ( and ) and numbers
@@ -86,6 +126,21 @@ def fix_lines(lines):
         if line[0] == '(':
             line = " ".join(line.split()[1:])
             fixed_lines.append(line)
+            # if ind < len(lines) - 4:
+            if "Passed In" in lines[ind + 1] and ("," or "-") not in line:
+                # papers passed comes before
+                # could throw a list index out of range error
+                # TODO fix this
+                fixed_lines.append(lines[ind + 2].strip())
+                if len(lines[ind + 3].split()) == 1:
+                    # part of the grade continues on third line
+                    fixed_lines.append(lines[ind + 3].strip())
+                    skip_ind.add(ind + 3)
+                fixed_lines.append(lines[ind + 1].strip())
+
+                skip_ind.add(ind + 1)
+                skip_ind.add(ind + 2)
+
             continue
 
         if line[-1] == ')' and line[-2].isdigit():
@@ -107,6 +162,11 @@ def fix_lines(lines):
             continue
 
         if "Centre No:" in line:
+            # if ind > len(lines) - 2:
+            #     continue
+            if "Centre No:" in lines[ind + 1]:
+                # no student passed in current center
+                continue
             if "Passed" not in lines[ind + 1]:
                 line = line + " " + lines[ind + 1].strip()
                 fixed_lines.append(line)
@@ -195,6 +255,11 @@ def final_fix(lines):
             # either previos item is a name
             last = split_line[-1]
             if len(split_line) == 1:
+                if len(last) > 4 and ("-" not in last or "," not in last):
+                    # name continuation
+                    last = temp_list[-1]
+                    temp_list[-1] = last + " " + line + " "
+                    continue
                 # grade continuation
                 last = temp_list[-1]
                 new_line = last + " " + line
@@ -254,7 +319,7 @@ def final_fix(lines):
                 temp_list.append(line + " ")
                 should_build = True
 
-    # save_final_file(temp_list)
+    save_final_file(temp_list)
     return temp_list
 
 
@@ -264,7 +329,7 @@ def save_final_file(lines):
     :param lines: list of lines
     :return: None
     """
-    with open('out/final.txt', 'w') as f:
+    with open('out/final.txt', 'w', encoding='utf-8') as f:
         for line in lines:
             f.write(line + '\n')
 
@@ -294,8 +359,8 @@ def process_name_grade(line):
     return s_name, s_grade
 
 
-def saveFile(my_json):
-    with open("out/OLG2020_FINAL.txt", "w") as f:
+def saveFile(my_json, file_name):
+    with open(file_name, "w") as f:
         f.write(my_json)
 
 
