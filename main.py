@@ -6,8 +6,8 @@ from finsal_test_o import perform_test_o
 
 level = "ALT"
 year = "2022"
-file_name = 'alt2022.txt'
-save_name = "out/ALT2022_FINAL.txt"
+file_name = f'{level}{year}.txt'
+save_name = f"out/{file_name}_FINAL.txt"
 
 
 def main():
