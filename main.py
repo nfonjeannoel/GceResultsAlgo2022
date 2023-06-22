@@ -5,13 +5,13 @@ from algos import read_file, rm_useless_lines, fix_lines, final_fix, is_center, 
 from finsal_test_o import perform_test_o
 
 level = "ALT"
-year = "2022"
+year = "2021"
 file_name = f'{level}{year}.txt'
-save_name = f"out/{file_name}_FINAL.txt"
+save_name = f"out/{file_name}_FINAL.json"
 
 
 def main():
-    lines = read_file(file_name)
+    lines = read_file(f"input/{file_name}")
     lines = rm_useless_lines(lines)
     lines = fix_lines(lines) if level[-1] == "G" else fix_lines_technical(lines)
     lines = final_fix(lines)
@@ -40,7 +40,7 @@ def main():
             json_builder.append(student_data)
 
     perform_test_o(json_builder)
-    saveFile(json.dumps(json_builder), save_name)
+    saveFile(json_builder, save_name)
 
 
 if __name__ == '__main__':

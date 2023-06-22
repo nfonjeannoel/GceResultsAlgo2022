@@ -1,4 +1,6 @@
+import json
 import logging
+import os
 
 
 def read_file(file_name):
@@ -37,6 +39,7 @@ def rm_useless_lines(lines):
         if line.strip()[0] == '(' and len(line.strip().split()) == 1:
             continue
 
+
         new_lines.append(line)
 
     save_temp_file(new_lines)
@@ -49,6 +52,11 @@ def save_temp_file(lines):
     :param lines: list of lines
     :return: None
     """
+    # CREATE A DIRECTORY CALLED OUT IF IT DOESN'T EXIST
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    out_dir = os.path.join(BASE_DIR, 'out')
+    os.makedirs(out_dir, exist_ok=True)
+
     with open('out/temp.txt', 'w', encoding='utf-8') as f:
         for line in lines:
             f.write(line + '\n')
@@ -82,8 +90,8 @@ def fix_lines_technical(lines):
             continue
         if "Passed In" in line:
             # if "Specialty:" in lines[ind + 1]:
-                # line = line + " " + lines[ind + 1].strip()
-                # skip_ind.add(ind + 1)
+            # line = line + " " + lines[ind + 1].strip()
+            # skip_ind.add(ind + 1)
             # fixed_lines.append(line)
             continue
         if "Specialty:" in line:
@@ -127,7 +135,7 @@ def fix_lines(lines):
             line = " ".join(line.split()[1:])
             fixed_lines.append(line)
             # if ind < len(lines) - 4:
-            if "Passed In" in lines[ind + 1] and ("," or "-") not in line:
+            if (ind < len(lines) - 1) and ("Passed In" in lines[ind + 1]) and (("," or "-") not in line):
                 # papers passed comes before
                 # could throw a list index out of range error
                 # TODO fix this
@@ -361,7 +369,7 @@ def process_name_grade(line):
 
 def saveFile(my_json, file_name):
     with open(file_name, "w") as f:
-        f.write(my_json)
+        json.dump(my_json, f)
 
 
 def encode(grade):
