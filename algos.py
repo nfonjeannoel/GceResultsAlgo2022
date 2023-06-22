@@ -19,6 +19,7 @@ def rm_useless_lines(lines):
     :param lines: list of lines
     :return: list of important lines
     """
+    watermark_to_avoid = ["dreampointech.com"]
     new_lines = []
     for line in lines:
         line = line.strip()
@@ -38,7 +39,13 @@ def rm_useless_lines(lines):
             continue
         if line.strip()[0] == '(' and len(line.strip().split()) == 1:
             continue
-
+        if line[-1] == ')' and len(line.strip().split()) == 1:
+            continue
+        # if len(line.strip().split()) == 1 and ("-" not in line or "," not in line):
+        #     # might cause errors for name with single word
+        #     continue
+        if line.strip() in watermark_to_avoid:
+            continue
 
         new_lines.append(line)
 

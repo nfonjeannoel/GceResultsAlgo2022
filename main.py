@@ -4,14 +4,14 @@ from algos import read_file, rm_useless_lines, fix_lines, final_fix, is_center, 
     get_papers_passed, process_name_grade, saveFile, encode, fix_lines_technical
 from finsal_test_o import perform_test_o
 
-level = "ALT"
-year = "2021"
-file_name = f'{level}{year}.txt'
+level = "OLT"
+year = "2022"
+file_name = f'{level}{year}'
 save_name = f"out/{file_name}_FINAL.json"
 
 
 def main():
-    lines = read_file(f"input/{file_name}")
+    lines = read_file(f"input/{file_name}.txt")
     lines = rm_useless_lines(lines)
     lines = fix_lines(lines) if level[-1] == "G" else fix_lines_technical(lines)
     lines = final_fix(lines)
