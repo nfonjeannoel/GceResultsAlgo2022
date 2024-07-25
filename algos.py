@@ -3,6 +3,10 @@ import logging
 import os
 
 
+def final_new_format(lines):
+    pass
+
+
 def read_file(file_name):
     """
     Reads a file and returns a list of lines.
@@ -37,6 +41,10 @@ def rm_useless_lines(lines):
             continue
         if not line.strip():
             continue
+        if "alphabetical order" in line.lower():
+            continue
+        if line.lower().startswith("subjects:"):
+            continue
         if line.strip()[0] == '(' and len(line.strip().split()) == 1:
             continue
         if line[-1] == ')' and len(line.strip().split()) == 1:
@@ -45,6 +53,9 @@ def rm_useless_lines(lines):
         #     # might cause errors for name with single word
         #     continue
         if line.strip() in watermark_to_avoid:
+            continue
+
+        if line.strip().isdigit() and new_lines[-1].strip() and "passed" in new_lines[-1].strip().lower():
             continue
 
         new_lines.append(line)
@@ -361,7 +372,7 @@ def process_center(line):
 
 
 def is_papers_passed(line):
-    return "Passed In" in line
+    return "passed in" in line.lower()
 
 
 def get_papers_passed(line):

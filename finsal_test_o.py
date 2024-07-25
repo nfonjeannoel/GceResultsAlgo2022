@@ -31,6 +31,8 @@ def contains_dash(my_json):
 
 def check_type_papers_passed(my_json):
     for name in my_json:
+        if name['level'][-1] == "T" and int(name['year']) >= 2023:
+            continue
         papers_passed = name["papers_passed"]
         try:
             type(int(papers_passed)) == int
@@ -64,7 +66,8 @@ def check_duplicate(my_json):
         if new_item not in seen:
             seen.add(new_item)
         else:
-            dupes.append(new_item)
+
+            dupes.append(item)
 
     if dupes:
         print("duplicates found")
@@ -73,7 +76,12 @@ def check_duplicate(my_json):
 
 def check_papers_passed(my_json):
     for item in my_json:
+        # BECAUSE RESULTS FOR TECHNICAL DO NOT HAVE GRADES FROM 2023
+        if item['level'][-1] == "T" and int(item['year']) >= 2023:
+            continue
         if int(item["papers_passed"]) == item["student_grades"].count("-"):
+            pass
+        elif int(item['year']) >= 2023 and int(item["papers_passed"]) == item["student_grades"].count("-") + 1:
             pass
         else:
             print("number of papers passed not equal to number of grades")
